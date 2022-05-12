@@ -1,0 +1,54 @@
+- ## [[Machine learning]] [[Presentation notes]]
+	- ### Neural networ architecture
+		- Las redes neuronales **se organizan en capas**, que son basicamente estos conjuntos de neuronas
+		- Entre estas capas **la primera es la que recibe la información de entrada** que pueden ser imágenes, por ejemplo.
+		  La última de todas **las capas se conoce como capa de salida**
+		- Algunas redes neuronales **tienen varias capas escondidas conocidas** como deep networks. Los algorismos de machine learning **que usan estas deep networks se clasifican dentro del deep learning**
+		- En general las redes neuronales cuentan con tres tipos de capas, las **capas convolucionales, capas de pooling y capas desas o fully connected**
+	- ### Convolutional layer
+		- La **presencia de estas capas convierte al modelo de red neuronal** en una red neuronal convolucional o CNN
+		- Corresponden a la **primera capa de en una CNN.** Esta capa toma una imagen de entrada, por ejemplo, y r**ealiza una serie de operaciones de convolución** a la imagen. En otras palabras, toma un tensor de im**agen y aplica un número específico de filtros convolucionales (o kernels)**, agrega un bias y aplica una función de activación no lineal (generalmente Relu)
+		- Todas **las neuronas aplican la operación de convolución a las entradas,** por eso a las neuronas de esas capas se les llaman neuronas convolucionales
+		- el objetivo de las **capas convolucionales es extraer patrones e información de la Imagen**. Los kernel o **filtros  convolucionales que se ubican al  principio de la red son responsables de capturar las** carcaterísticas generales de la imagen como el color, **o la orientación del gradiente .** Los **kernel de high-level features como bordes en la imagen.**
+	- ### Pooling layer
+		- Es una **forma de extraer  las características mientras se remueve información externa o poco relevante**, permitiendo **aprender mucho más rápido**
+		- Reducen el costo computacional: **reducen el tamaño de la imagen  y por lo tanto reduce el numero de parámetros y cálculos que requiere la red,** pero conservando la información relevante de esta
+		- Ayuda a que **la red sea más genérica ya que combina el efecto de varios pixeles en uno solo**, perimtiendo **que la red no presente sesgo hacia pixeles particulares u overfitting**
+		- Estas capas preferentemente se utilizan **inmediatamente después de una capa convolucional**
+		- aplica una **serie de operaciones de pooling**, la más típica es la operación de max-pooling, pero tambiéne xisten otras menos comunes commo min-pooling o average pooling, **no requiere parámetros**
+		- Se aplica a cada canal de forma separada, por lo que si bien se reduce las dimensiones de ancho y alto, mantiene la profundidad constante.
+		-
+	- ### Fully connecyed layers
+		- También se conocen como capas densas,  **ya que cada neurona de una capa recibe como entrada todas las salidas de la capa previa.**
+		- Las salidas de estas capas son la entrada que les llega, multiplicada por un peso y un bias agregado
+		- Son las capas encargadas de **realizar la clasificación, encontrando un puntaje de probabilidad**  para cada una de las posibles etiquetas en el dataset
+	- ### CNN arquitecture
+		- En conjunto las **capas convolucionales y pooling son responsables de la extracción de características** de la imgen , por lo que se conocen también como capas de extracción. Mientras que las c**apas densas que son responsables de la clasiificación de la imagen**
+		- En una **CNN las capas convolucionales y de pooling se pueden repetir varias veces** antes de unirse con las capas fully connected, por lo que en ocasiones se considera la capa de convolución y de pooling como una sola capa y **se consideran capas ocultas.**
+	- ### Dropout
+		-
+		- Es una técnica de rregularización de modelos que busca **disminuir** el nivel de dependencia entre las capas de la red neuronal, hacer  que la red sea más robusta en cuanto a identificación de características y resolver el problema **que pasa si  mi entrada no presenta cierta característica**
+		- **Ejemplo del gatito**
+			- Supongamos que tenemos **un a red neuronal que detecta gatitos**,  hay varias neuronas o nodos en la red y uno de ellos la capa **n detecta los bigotes y tiene un peso mayor** que los otros nodos, y **la capa n +1 detecta gatos** . Si ahora las entradas son gatitos especiales que no tienen bigotes, o no tienen dos orejas o no tienen 4 patas...  **dificilmente** el modelo  va a poder reconocer que se trata de un gato
+		- **Analogía de Daredevil**
+		- **Idea del dropout**
+			- durante el entrenamiento de la red, con una probabilidad mu  se van a setear las neuronas en cero, esto implica que todas las conexiones entrantes y salientes de quitan del modelo.
+			- Esto significa que cada iteración genera un modelo diferente. ya que en cada iteración se apagan de manera aleatoria con cierta probabilidad diferentes neuronas. La red completa cambia aleatoriamente en cada iteración
+			- Dropout es una tecnica que permite aprovechar las ventajas de los **metodos de ensamblaje** para **promediar las predicciones de diferentes modelso (los que se generan en cada iteración)** y todo esto basado **en una sola red sin el costo computacional** que se introducen en los metodos de ensamblaje tradicionales, como crear modelos desde cero, o guardar parametros de cada modelo, etc.
+			- **important** el *ensemble method* que se crea con el dropout es exponencialmente y crece con el numero de iteraciones del entrenamiento
+		- **In practice**
+			- Se agregan capas de dropout sin peso que con cierta probabilidad hacen que las neuronas se desconecten como un switch de las demás capas.
+			- Se usa una flag para indicar si estamos en tiempo de entrenamiento o tiempo de inferencia. **por qué es importante esta flag**
+			- Hay que distinguir el tiempoi de inferencia y el tiempo de entrenamiento porque las entradas de la **capa posterior al dropout son en promedio más pequeñas que en tiempo de inferencia,** esto se debe a que con probabilidad mu algunas neuronas se desconectaron y no entregan salidas.
+			- hay que corregir esta diferencia, se puede **hacer en tiempo de inferencia o en entrenamiento**, en **inferencia simplemente hay que achicar las salidas del dropout con el factor (1-u), mientras que en tiempo de entrenamiento se corrige  multiplicando por el factor 1/(1-u),** esta solución es mejor porque se puede corregir inmediatamente la salida en la misma iteración, y es versaril a cambios en la probabilidad u
+		- **advantages**
+			- **redundant representation**: el modelo entiende que cualquier neurona puede ser eliminada en una iteración del entrenamiento de forma aleatoria, asi que aprende a no confiar demasiado en las salidas de ciertas neuronas. Esto obliga al modelo a representar la ifnromación de forma más distribuida y redundante, para que la aleatoriedad en que se eliminan las neuronas no afecte drásticamente la predicción final
+			- **model capacity** esta técnica requiere modelos már grandes y entrenamientos mas prolongados. Como el modelo esta obligado a aprender representaciones redundantes también se reduce la varianza.
+			- **co-adaptacion** En el aprendizaje profundo clásico, **las neuronas pueden aprender a deshacer** el efecto de otras neuronas cercanas. Por ej. considerar un escenario donde una neurona aprende a tener **una activación muy alta y otra neurona cercana aprende a tener una activación muy baja**. Cuando las salidas de estas dos neuronas se combinan, efectivamente **se cancelan el efecto de cada una**.
+- ### Early stopping
+	- Lo que sucede generalmente en el entrenamiento de una red neuronal es que el **error de entrenamiento baja** mientras que el **error de validación aumenta**
+	- Esto implica que podemos tener un modelo con un buen error de validación  si tenemos parámetros que se encontraron cerca del punto en el que comenzó el overfitting
+	- En early stopping lo que se hace es **monitorear  e ir guardando el error de validación y los parámetros** con los que se consiguio ese error, cuando nos damos cuenta qu**e luego de cierta cantidad de iteraciones** de entrenamiento el error no disminuye se detiene el entrenamiento.
+	- **patience**  es un hyperparámetro que indica cuantas épocas o iteraciones vamos a esperar hasta que nos demos por vencidos y terminemos el entrenamiento
+	- **meta algoritmo**, explicación del algoritmo y mencionar que se el tiempo de entrenamiento se puede considerar como un algoritmo efieciente para las elección de un hyperparámetro que inica el numero de iteraciones de entrenamiento
+	-
